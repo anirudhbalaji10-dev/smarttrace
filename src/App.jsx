@@ -13,6 +13,7 @@ import ConsumerDashboardScreen from './components/screens/ConsumerDashboardScree
 import ReportsScreen from './components/screens/ReportsScreen';
 import ManufacturerPortalScreen from './components/screens/ManufacturerPortalScreen';
 import EcommerceScreen from './components/screens/EcommerceScreen';
+import EvidenceVaultScreen from './components/screens/EvidenceVaultScreen';
 
 // ─── Loading Spinner ──────────────────────────────────────────────────────────
 function AuthLoadingScreen() {
@@ -135,6 +136,9 @@ function AppInner() {
             )}
             {activeScreen === "rights" && (
               <ConsumerPortalScreen onNavigate={handleNavigate} initialTab="rights" />
+            )}
+            {activeScreen === "vault" && (
+              <EvidenceVaultScreen onNavigate={handleNavigate} />
             )}
           </main>
         </div>

@@ -21,7 +21,40 @@ import {
   FileText,
   BellRing
 } from 'lucide-react';
-import { techStackData, howItWorksSteps } from '../../data/mockArchitecture';
+const techStackData = [
+  {
+    category: "Frontend Web & Mobile", badgeColor: "bg-blue-100 text-blue-800",
+    items: [
+      { name: "React + Vite", desc: "Lightning fast UI rendering with HMR" },
+      { name: "Tailwind CSS", desc: "Utility-first styling & dark mode" },
+      { name: "React Leaflet", desc: "Live geo-spatial mapping for enforcement" }
+    ]
+  },
+  {
+    category: "Backend & Data", badgeColor: "bg-emerald-100 text-emerald-800",
+    items: [
+      { name: "Firebase Firestore", desc: "Real-time NoSQL document database" },
+      { name: "Firebase Auth", desc: "Secure RBAC (Role-Based Access Control)" },
+      { name: "Cloud Storage", desc: "Cryptographic evidence vault for images" }
+    ]
+  },
+  {
+    category: "Computer Vision & AI", badgeColor: "bg-purple-100 text-purple-800",
+    items: [
+      { name: "PaddleOCR", desc: "Multi-language optical character extraction" },
+      { name: "OpenCV Pipeline", desc: "Perspective deskew & binarization pre-processing" },
+      { name: "Rule Engine (Rule 6)", desc: "Algorithmic compliance validation logic" }
+    ]
+  }
+];
+
+const howItWorksSteps = [
+  { step: 1, title: "DPCR Registration", desc: "Manufacturers digitize packaging specs." },
+  { step: 2, title: "E-Commerce Scrape", desc: "Bots check online specs vs DPCR." },
+  { step: 3, title: "Field AI Inspection", desc: "Officers scan physical packs via OCR." },
+  { step: 4, title: "Cryptographic Evidence", desc: "Violations are hashed & geotagged." },
+  { step: 5, title: "Automated Notice", desc: "Rule 6/36 digital notices issued instantly." }
+];
 
 export default function ArchitectureScreen({ onNavigate }) {
   return (

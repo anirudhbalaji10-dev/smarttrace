@@ -20,7 +20,6 @@ import {
   Sparkles
 } from 'lucide-react';
 import StatusBadge from '../common/StatusBadge';
-import { mockProducts } from '../../data/mockProducts';
 import { getProducts } from '../../services/productsService';
 import { submitInspection } from '../../services/inspectionsService';
 import { useAuth } from '../../contexts/AuthContext';
@@ -34,10 +33,8 @@ export default function AiInspectionScreen({
   onSelectProduct 
 }) {
   const { currentUser, userProfile } = useAuth();
-  const [productsList, setProductsList] = useState(mockProducts);
-  const [currentProduct, setCurrentProduct] = useState(
-    mockProducts.find(p => p.id === selectedProductId) || mockProducts[0]
-  );
+  const [productsList, setProductsList] = useState([]);
+  const [currentProduct, setCurrentProduct] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(null);
   const [analysisCompleted, setAnalysisCompleted] = useState(true);
@@ -73,9 +70,8 @@ export default function AiInspectionScreen({
     setIsAnalyzing(true);
     setAnalysisCompleted(false);
 
-    simulateAiInspection(currentProduct, (step) => {
-      setAnalysisStep(step);
-    }).then(() => {
+    // Replace simulateAiInspection with an actual delay for now since it's just a UI loader
+    setTimeout(() => {
       setIsAnalyzing(false);
       setAnalysisCompleted(true);
 
@@ -115,7 +111,19 @@ export default function AiInspectionScreen({
         onNoticeSent={() => setNoticeSentNotice(true)}
       />
 
-      {/* Screen Header Bar */}
+      {!currentProduct ? (
+        <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
+          <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mb-4 border border-emerald-100">
+            <Scan className="w-8 h-8 text-emerald-500" />
+          </div>
+          <h2 className="text-xl font-black text-slate-800">No Products Registered</h2>
+          <p className="text-sm text-slate-500 mt-2 max-w-sm mx-auto">
+            Please register a product in the Manufacturer DPCR Portal before conducting an AI Packaging Inspection.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Screen Header Bar */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
@@ -477,7 +485,8 @@ export default function AiInspectionScreen({
         </div>
 
       </div>
-
+        </>
+      )}
     </div>
   );
 }

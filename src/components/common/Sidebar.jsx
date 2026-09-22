@@ -15,7 +15,9 @@ import {
   UserCheck,
   LogOut,
   X,
-  History
+  History,
+  Archive,
+  WifiOff
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -39,32 +41,28 @@ export default function Sidebar({
       id: "inspection",
       label: "AI Packaging Inspection",
       icon: Scan,
-      badge: "AI OCR",
-      badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+      badge: null,
       forRoles: ["Enforcement Officer", "Manufacturer/Packer"]
     },
     {
       id: "traceability",
       label: "Product Traceability",
       icon: GitFork,
-      badge: "Live Ledger",
-      badgeColor: "bg-blue-100 text-blue-800 border-blue-300",
+      badge: null,
       forRoles: ["Enforcement Officer", "Distributor/Wholesaler", "Retailer"]
     },
     {
       id: "ecommerce",
       label: "E-Commerce Monitor",
       icon: ShoppingBag,
-      badge: "Rule 6(10)",
-      badgeColor: "bg-purple-100 text-purple-800 border-purple-300",
+      badge: null,
       forRoles: ["Enforcement Officer", "E-commerce platform"]
     },
     {
       id: "complaints",
       label: "Consumer Grievances",
       icon: MessageSquareWarning,
-      badge: "Grievances",
-      badgeColor: "bg-amber-100 text-amber-800 border-amber-300",
+      badge: null,
       forRoles: ["Enforcement Officer"]
     },
     {
@@ -79,7 +77,7 @@ export default function Sidebar({
       label: "Action Center",
       icon: UserCheck,
       badge: null,
-      forRoles: ["Consumer", "Enforcement Officer"]
+      forRoles: ["Consumer"]
     },
     {
       id: "grievances",
@@ -101,14 +99,20 @@ export default function Sidebar({
       icon: Factory,
       badge: "Pre-Market",
       badgeColor: "bg-cyan-100 text-cyan-800",
-      forRoles: ["Manufacturer/Packer", "Enforcement Officer"]
+      forRoles: ["Manufacturer/Packer"]
     },
     {
       id: "reports",
       label: "Reports & Analytics",
       icon: FileBarChart2,
-      badge: "PDF / CSV",
-      badgeColor: "bg-slate-100 text-slate-700",
+      badge: null,
+      forRoles: ["Enforcement Officer"]
+    },
+    {
+      id: "vault",
+      label: "Evidence Vault & Drafts",
+      icon: Archive,
+      badge: null,
       forRoles: ["Enforcement Officer"]
     }
   ];
@@ -202,14 +206,28 @@ export default function Sidebar({
 
         {/* Bottom Status / Logout */}
         <div className="p-3 border-t border-slate-800/80 bg-slate-950/40 space-y-2">
-          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>DPCR Rule Engine v2.4</span>
-            </span>
-            <span className="text-[10px] text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-800">
-              Online
-            </span>
+          <div className="space-y-2 mb-3">
+            <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>DPCR Engine v2.4</span>
+              </span>
+              <span className="text-[10px] text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-800">
+                Online
+              </span>
+            </div>
+
+            {currentRole === "Enforcement Officer" && (
+              <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1 border-t border-slate-800/80">
+                <span className="flex items-center gap-1.5">
+                  <WifiOff className="w-3 h-3 text-emerald-500" />
+                  <span>Auth Token</span>
+                </span>
+                <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest">
+                  Cached / Offline Ready
+                </span>
+              </div>
+            )}
           </div>
 
           <button

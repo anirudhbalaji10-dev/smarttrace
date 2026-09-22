@@ -143,53 +143,16 @@ export default function Navbar({
             )}
           </div>
 
-          {/* Role Switcher Pill */}
+          {/* Static Role Indicator */}
           <div className="relative">
-            <button
-              onClick={() => setShowRoleMenu(!showRoleMenu)}
-              className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border border-slate-200 hover:border-emerald-600/50 bg-slate-50 hover:bg-white text-xs transition-all shadow-sm"
-            >
+            <div className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs shadow-sm">
               <div className="w-6 h-6 rounded-md bg-emerald-800 text-white flex items-center justify-center font-bold text-[10px]">
                 {currentRole === "Enforcement Officer" ? "EO" : currentRole === "Consumer" ? "CN" : "MF"}
               </div>
               <div className="text-left hidden sm:block">
-                <p className="text-[10px] text-slate-400 uppercase font-semibold leading-none">Role View</p>
                 <p className="font-bold text-slate-800 text-xs leading-tight mt-0.5">{currentRole}</p>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-
-            {showRoleMenu && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3 py-1.5 border-b border-slate-100">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase">Switch Role</span>
-                </div>
-                {roles.map((r) => (
-                  <button
-                    key={r.id}
-                    onClick={() => {
-                      onRoleChange(r.id);
-                      setShowRoleMenu(false);
-                      if (r.id === "Consumer") onNavigate("consumer");
-                      else if (r.id === "Manufacturer/Packer") onNavigate("manufacturer");
-                      else if (r.id === "E-commerce platform") onNavigate("ecommerce");
-                      else onNavigate("dashboard");
-                    }}
-                    className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 transition-colors ${
-                      currentRole === r.id ? "bg-emerald-50 text-emerald-900 font-bold" : "text-slate-700"
-                    }`}
-                  >
-                    <div>
-                      <p className="font-medium">{r.label}</p>
-                      <p className="text-[10px] text-slate-400">{r.desc}</p>
-                    </div>
-                    {currentRole === r.id && (
-                      <span className="w-2 h-2 rounded-full bg-emerald-600" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            </div>
           </div>
 
         </div>

@@ -1,11 +1,25 @@
 import React, { useState } from 'react';
 import { X, BookOpen, Scale, FileText, CheckCircle2, ShieldCheck, Search } from 'lucide-react';
-import { 
-  mandatoryDeclarationsRule6, 
-  scheduleIITolerances, 
-  rule9FontHeights, 
-  gazetteNotifications 
-} from '../../data/mockMasterRules';
+const mandatoryDeclarationsRule6 = [
+  { rule: 'Rule 6(1)(a)', title: 'Name and Address of Manufacturer', detail: 'Must be present on the package.', status: 'Mandatory' },
+  { rule: 'Rule 6(1)(b)', title: 'Generic Name', detail: 'Commonly used name of the commodity.', status: 'Mandatory' },
+  { rule: 'Rule 6(1)(c)', title: 'Net Quantity', detail: 'In standard metric units.', status: 'Mandatory' },
+  { rule: 'Rule 6(1)(e)', title: 'Maximum Retail Price (MRP)', detail: 'Inclusive of all taxes.', status: 'Mandatory' }
+];
+
+const scheduleIITolerances = [
+  { range: '0 - 50g', maxErrorPercent: '9%', maxAbsoluteError: '-', notes: 'Small packs' },
+  { range: '50g - 100g', maxErrorPercent: '-', maxAbsoluteError: '4.5g', notes: 'Medium packs' },
+];
+
+const rule9FontHeights = [
+  { pdaArea: '< 50 sq. cm', minFontHeightMm: '1.0 mm', numeralHeightMm: '1.0 mm' },
+  { pdaArea: '50 - 100 sq. cm', minFontHeightMm: '1.5 mm', numeralHeightMm: '1.5 mm' },
+];
+
+const gazetteNotifications = [
+  { id: 'GSR 123(E)', date: '12 Jan 2024', subject: 'Amendment to Rule 6', status: 'Active' },
+];
 
 export default function MasterRulesModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState("rule6");

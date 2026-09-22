@@ -26,8 +26,17 @@ import StatusBadge from '../common/StatusBadge';
 import { useAuth } from '../../contexts/AuthContext';
 import { submitComplaint, getComplaintsByUser } from '../../services/complaintsService';
 import { uploadComplaintPhoto } from '../../services/storageService';
-import { mockProducts } from '../../data/mockProducts';
-import { mockComplaintsList, complaintCategories } from '../../data/mockComplaints';
+import { getProducts } from '../../services/productsService';
+
+const complaintCategories = [
+  "MRP Mismatch (Overcharging / Dual MRP)",
+  "Underweight / Inaccurate Net Quantity",
+  "Missing Mandatory Declarations (Rule 6)",
+  "Missing / Erased Expiry or Best Before Date",
+  "No Manufacturer / Packer Details",
+  "Missing Country of Origin on Imported Goods",
+  "Font Height Below Statutory Minimum"
+];
 
 export default function ConsumerPortalScreen({ onNavigate, initialTab = "file" }) {
   const { currentUser, userProfile } = useAuth();

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ShieldCheck, Building2, User, ArrowRight, ArrowLeft,
   Eye, EyeOff, CheckCircle2, XCircle, Loader2, Lock,
-  Mail, Phone, MapPin, AlertCircle, ChevronDown, Hash
+  Mail, Phone, MapPin, AlertCircle, ChevronDown, Hash, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -244,6 +244,139 @@ function PasswordField({ label, required, value, onChange, placeholder, error, h
   );
 }
 
+// ─── Real Local CAPTCHA Component ──────────────────────────────────────────────
+
+function GovCaptcha({ onVerify }) {
+  const canvasRef = useRef(null);
+  const [captchaText, setCaptchaText] = useState('');
+  const [userInput, setUserInput] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
+  const [error, setError] = useState(false);
+
+  const generateCaptcha = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    let text = '';
+    for (let i = 0; i < 5; i++) text += chars.charAt(Math.floor(Math.random() * chars.length));
+    setCaptchaText(text);
+    setUserInput('');
+    setIsVerified(false);
+    setError(false);
+    onVerify(false);
+    drawCaptcha(text);
+  };
+
+  const drawCaptcha = (text) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Background noise
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw lines
+    for (let i = 0; i < 7; i++) {
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+      ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+      ctx.strokeStyle = `rgba(16, 185, 129, ${Math.random() * 0.5})`; // emerald tint
+      ctx.lineWidth = Math.random() * 2;
+      ctx.stroke();
+    }
+    
+    // Draw text with rotation
+    ctx.font = 'bold 24px monospace';
+    ctx.fillStyle = '#0f172a'; // slate-900
+    ctx.textBaseline = 'middle';
+    
+    for (let i = 0; i < text.length; i++) {
+      ctx.save();
+      const x = 20 + i * 25;
+      const y = canvas.height / 2 + (Math.random() * 8 - 4);
+      ctx.translate(x, y);
+      ctx.rotate((Math.random() - 0.5) * 0.4); // rotate +/- small amount
+      ctx.fillText(text[i], 0, 0);
+      ctx.restore();
+    }
+    
+    // Draw dots
+    for (let i = 0; i < 30; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(0, 0, 0, ${Math.random() * 0.2})`;
+        ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+  };
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+
+  const handleVerify = () => {
+    if (userInput === captchaText) {
+      setIsVerified(true);
+      setError(false);
+      onVerify(true);
+    } else {
+      setError(true);
+      generateCaptcha();
+    }
+  };
+
+  return (
+    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+      <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">
+        Security Verification <span className="text-red-500">*</span>
+      </label>
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <canvas 
+            ref={canvasRef} 
+            width={160} 
+            height={50} 
+            className="border border-slate-300 rounded shadow-sm bg-white"
+          />
+          <button 
+            type="button" 
+            onClick={generateCaptcha}
+            className="p-2 text-slate-400 hover:text-emerald-600 transition-colors bg-white border border-slate-200 rounded-lg shadow-sm"
+            title="Refresh CAPTCHA"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <input 
+            type="text" 
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            disabled={isVerified}
+            placeholder="Type characters above"
+            onKeyDown={(e) => e.key === 'Enter' && !isVerified && handleVerify()}
+            className={[
+              'flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2',
+              isVerified ? 'bg-emerald-50 border-emerald-300 text-emerald-900 cursor-not-allowed'
+                : error ? 'bg-red-50 border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                : 'bg-white border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/20'
+            ].join(' ')}
+          />
+          <button 
+            type="button"
+            onClick={handleVerify}
+            disabled={isVerified || !userInput}
+            className="px-3 py-2 bg-slate-800 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 disabled:opacity-50 transition-colors"
+          >
+            Verify
+          </button>
+        </div>
+        {isVerified && <p className="text-xs text-emerald-600 font-semibold flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> Verified successfully</p>}
+        {error && <p className="text-xs text-red-600 font-semibold">Incorrect CAPTCHA, please try again.</p>}
+      </div>
+    </div>
+  );
+}
+
 // ─── GSTIN Verifier ───────────────────────────────────────────────────────────
 
 function useGstinVerifier() {
@@ -328,6 +461,7 @@ function OfficerLoginForm({ form, setForm }) {
         hint="Use your registered government email address" />
       <PasswordField label="Password" required value={form.password}
         onChange={e => setForm(p => ({ ...p, password: e.target.value }))} />
+      <GovCaptcha onVerify={(verified) => setForm(p => ({...p, captchaVerified: verified}))} />
     </div>
   );
 }
@@ -389,6 +523,7 @@ function OfficerSignupForm({ form, setForm }) {
       </div>
       <PasswordField label="Set Password" required value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} hint="Minimum 8 characters" />
       <PasswordField label="Confirm Password" required value={form.confirmPassword} onChange={e => setForm(p => ({ ...p, confirmPassword: e.target.value }))} />
+      <GovCaptcha onVerify={(verified) => setForm(p => ({...p, captchaVerified: verified}))} />
     </div>
   );
 }
@@ -699,7 +834,9 @@ function AuthFormStage({ roleId, onBack }) {
               {roleId === 'officer' && <OfficerLoginForm form={loginForm} setForm={setLoginForm} />}
               {roleId === 'business' && <BusinessLoginForm form={loginForm} setForm={setLoginForm} gstinStatus={gstin.status} gstinData={gstin.data} onVerify={handleVerifyGstin} />}
               {roleId === 'consumer' && <ConsumerLoginForm form={loginForm} setForm={setLoginForm} onGoogleLogin={handleGoogleAction} isLoading={isLoading} />}
-              <button onClick={handleLogin} disabled={isLoading}
+              <button 
+                onClick={handleLogin} 
+                disabled={isLoading || (roleId === 'officer' && !loginForm.captchaVerified)}
                 className={`w-full py-3 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed ${role.btnCls}`}>
                 {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Signing In…</> : <><span>Sign In</span><ArrowRight className="w-4 h-4" /></>}
               </button>
@@ -714,7 +851,9 @@ function AuthFormStage({ roleId, onBack }) {
               {roleId === 'officer' && <OfficerSignupForm form={signupForm} setForm={setSignupForm} />}
               {roleId === 'business' && <BusinessSignupForm form={signupForm} setForm={setSignupForm} gstinStatus={gstin.status} gstinData={gstin.data} onVerify={handleVerifyGstin} />}
               {roleId === 'consumer' && <ConsumerSignupForm form={signupForm} setForm={setSignupForm} onGoogleSignup={handleGoogleAction} isLoading={isLoading} />}
-              <button onClick={handleSignup} disabled={isLoading}
+              <button 
+                onClick={handleSignup} 
+                disabled={isLoading || (roleId === 'officer' && !signupForm.captchaVerified)}
                 className={`w-full py-3 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed ${role.btnCls}`}>
                 {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating Account…</> : <><span>Create Account</span><ArrowRight className="w-4 h-4" /></>}
               </button>
